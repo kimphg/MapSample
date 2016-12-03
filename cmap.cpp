@@ -47,7 +47,7 @@ void CMap::Repaint()
 
 void CMap::setPath(QString path)
 {
-    mPath = path + "/%1/%2_%3_%4.png";
+    mPath = path + "/%1/%2/%3.png";
 }
 
 
@@ -194,7 +194,7 @@ void CMap::LoadMap()
 
 
     //QString path = "C:/Users/LamPT/Desktop/mapData/%1/%2_%3_%4.png" ;
-    QString imageMapPath = mPath.arg(mScale).arg(mScale).arg(grab.x()).arg(grab.y());
+    QString imageMapPath = mPath.arg(mScale).arg(grab.x()).arg(grab.y());
     QImage img(imageMapPath);
     //QPoint tp = grab;
 

@@ -12,11 +12,11 @@ MainWindow::MainWindow(QWidget *parent) :
     map = new CMap(this);
     map->setCenterPos(21.036264,105.774866);
     map->setScaleRatio(16);
-    //map->setWidthHeight(400,300);
-    map->setPath("C:/Users/LamPT/Desktop/mapData");
+    //map->setPath("D:/DOWN/MapData/OpenStreetMap");
+    map->setPath("D:/DOWN/MapData/ThunderForest");
     map->invalidate();
     map->UpdateImage();
-    this->setGeometry(0,0,1024,1024);
+    this->setGeometry(10,10,1024,768);
 }
 void MainWindow::paintEvent(QPaintEvent * e)
 {
