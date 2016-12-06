@@ -34,7 +34,6 @@ CMap::~CMap()
 
 double CMap::getScaleRatio()
 {
-
     return mScale;
 }
 
@@ -69,6 +68,13 @@ void CMap::setWidthHeight(int width, int height)
     mMapWidth = width;
     mMapHeight = height;
     mapImage = new QPixmap(mMapWidth,mMapHeight);
+}
+
+//ham lay ti le m tren pixel
+double CMap::getScaleKm()
+{
+    double metersPerPixel = 156543.03392 * cos(mCenterLat * M_PI / 180) / pow(2, mScale);
+    return  metersPerPixel;
 }
 
 // xac dinh manh ban do tu dau ra dau vao
@@ -157,11 +163,13 @@ void CMap::render(QPainter *p, const QRect &rect)
             }
         }
 }
+
 void CMap::UpdateImage()
 {
     QPainter p(mapImage);
     render(&p,mapImage->rect());
 }
+
 QPixmap *CMap::getImage()
 {
     return mapImage;

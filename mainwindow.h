@@ -16,8 +16,13 @@ public:
     ~MainWindow();
     CMap *map;
     void paintEvent(QPaintEvent *e);
+    void resizeEvent(QResizeEvent *);
+    void keyPressEvent(QKeyEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
 private:
     Ui::MainWindow *ui;
+    QPoint *pointCLick;
+    bool releaseMouse;
 };
 
 #endif // MAINWINDOW_H

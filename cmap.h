@@ -23,17 +23,16 @@ public:
     void setPath(QString path);
     double getScaleRatio();
 
-
     void pan(const QPoint &delta);
     void invalidate();
     void render(QPainter *p, const QRect &rect);
     QPixmap* getImage();
     void UpdateImage();
+    double getScaleKm();
+
 signals:
     void updated(const QRect &rect);
 private slots:
-    //void handleNetworkData(QNetworkReply *reply);
-    //void download();
     void LoadMap();
 
 protected:
@@ -44,7 +43,6 @@ private:
     QRect m_tilesRect;
     QPixmap m_emptyTile;
     QHash<QPoint, QPixmap> m_tilePixmaps;
-    //QNetworkAccessManager m_manager;
     QUrl m_url;
     QString mPath;
     QPixmap *mapImage;//pkp
@@ -53,6 +51,7 @@ private:
     double mScale;
     double mCenterLat;
     double mCenterLon;
+    //double metersPerPixel;
 };
 
 #endif // CMAP_H
