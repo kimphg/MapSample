@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     map = new CMap(this);
     map->setCenterPos(21.036264,105.774866);
-    map->setScaleRatio(16);
+    map->setScaleRatio(15);
     //map->setPath("D:/DOWN/MapData/OpenStreetMap");
     map->setPath("D:/DOWN/MapData/ThunderForest");
     map->invalidate();
@@ -29,8 +29,10 @@ void MainWindow::paintEvent(QPaintEvent * e)
 {
     QPainter p(this);
     p.drawPixmap( (e->rect()),*(map->getImage()));
-    QString datatemp = "Ti le:" + QString::number(map->getScaleM()) + "met fer pixel";
-    p.drawText(rect(), Qt::AlignBottom|Qt::TextWordWrap,datatemp);
+    //QString datatemp = "Ti le:" + QString::number(map->getScaleKm()) + "met fer pixel";
+    double km = map->getScaleKm();
+    p.drawLine(20,20,20,20+km);
+    p.drawText(rect(), Qt::AlignTop|Qt::TextWordWrap,"1 km");
 }
 
 void MainWindow::resizeEvent(QResizeEvent *)

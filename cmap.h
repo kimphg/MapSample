@@ -18,7 +18,7 @@ public:
 
     void Repaint();
     void setCenterPos(double lat, double lon);
-    void setScaleRatio(double scale);
+    void setScaleRatio(int scale);
     void setWidthHeight(int width, int height);
     void setPath(QString path);
     double getScaleRatio();
@@ -28,7 +28,7 @@ public:
     void render(QPainter *p, const QRect &rect);
     QPixmap* getImage();
     void UpdateImage();
-    double getScaleM();
+    double getScaleKm();
     double pixelHeight(double km);
     double pixelWidth(double km);
 
@@ -50,7 +50,7 @@ private:
     QPixmap *mapImage;//pkp
     int mMapWidth;
     int mMapHeight;
-    double mScale;
+    int mScale;
     double mCenterLat;
     double mCenterLon;
     //double metersPerPixel;

@@ -57,7 +57,7 @@ void CMap::setCenterPos(double lat, double lon)
 }
 
 
-void CMap::setScaleRatio(double scale)
+void CMap::setScaleRatio(int scale)
 {
     mScale = scale;
 }
@@ -71,7 +71,7 @@ void CMap::setWidthHeight(int width, int height)
 }
 
 //ham lay ti le m tren pixel
-double CMap::getScaleM()
+double CMap::getScaleKm()
 {
     //The distance represented by one pixel (S) is given by
     //S=C*cos(y)/2^(z+8)
@@ -80,8 +80,9 @@ double CMap::getScaleM()
     //z is the zoom level
     //y is the latitude of where you're interested in the scale.
 
-    double metersPerPixel = 156543.03392 * cos(mCenterLat * M_PI / 180) / pow(2, mScale);
-    return  metersPerPixel;
+    //double metersPerPixel = 156543.03392 * cos(mCenterLat * M_PI / 180) / pow(2, mScale);
+    return (double)(1<<mScale)/156.54303392 / cos(mCenterLat * M_PI / 180.0) ;
+
 }
 
 double CMap::pixelHeight(double km)
