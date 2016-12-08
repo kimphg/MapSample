@@ -19,10 +19,13 @@ public:
     void resizeEvent(QResizeEvent *);
     void keyPressEvent(QKeyEvent *e);
     void mouseMoveEvent(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
+    bool pressed;
 private:
     Ui::MainWindow *ui;
-    QPoint *pointCLick;
-    bool releaseMouse;
+    QPoint pressPos;
+
 };
 
 #endif // MAINWINDOW_H

@@ -28,7 +28,9 @@ public:
     void render(QPainter *p, const QRect &rect);
     QPixmap* getImage();
     void UpdateImage();
-    double getScaleKm();
+    double getScaleM();
+    double pixelHeight(double km);
+    double pixelWidth(double km);
 
 signals:
     void updated(const QRect &rect);

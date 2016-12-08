@@ -29,6 +29,8 @@ void MainWindow::paintEvent(QPaintEvent * e)
 {
     QPainter p(this);
     p.drawPixmap( (e->rect()),*(map->getImage()));
+    QString datatemp = "Ti le:" + QString::number(map->getScaleM()) + "met fer pixel";
+    p.drawText(rect(), Qt::AlignBottom|Qt::TextWordWrap,datatemp);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *)
@@ -65,7 +67,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 
 void MainWindow::mouseMoveEvent(QMouseEvent *e)
 {
-    if(press)
+    if(pressed)
     {
 
     }
