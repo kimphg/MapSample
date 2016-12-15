@@ -27,9 +27,8 @@ void MainWindow::paintEvent(QPaintEvent * e)
     QPainter p(this);
     ui->label_scale->setText("OSM scale factor:" + QString::number(map->getScaleRatio()));
     QPixmap pix = map->getImage(mScale);
-
-    p.drawPixmap((-pix.width()/2+width()/2)+dxMap,
-                 (-pix.height()/2+height()/2)+dyMap,
+    p.drawPixmap((width()/2.0-pix.width()/2.0)+dxMap,
+                 (height()/2.0-pix.height()/2.0)+dyMap,
                  pix.width(),pix.height(),pix
                  );
     // draw the reference 1km line in top left of the map
@@ -85,6 +84,16 @@ void MainWindow::mouseMoveEvent(QMouseEvent *e)
         dyMap = e->y()-pressPos.y();
         update();
     }
+    else
+    {
+        //show cursor lat-lon
+        short   x = this->mapFromGlobal(QCursor::pos()).x() - width()/2;
+        short   y = this->mapFromGlobal(QCursor::pos()).y() - height()/2;
+        double lat,lon;
+        map->ConvKmToWGS(x/mScale,-y/mScale,&lon,&lat);
+        ui->lineEdit_cursor_lat->setText(QString::number(lat));
+        ui->lineEdit_cursor_lon->setText(QString::number(lon));
+    }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *e)
@@ -101,10 +110,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *e)
 {
     // change center lat-lon of the map
     double mouseLat,mouseLon;
-    map->ConvKmToWGS(-dxMap/mScale,dyMap/mScale,&mouseLon,&mouseLat);
+    map->ConvKmToWGS(-(double)dxMap/mScale,(double)dyMap/mScale,&mouseLon,&mouseLat);
     map->setCenterPos(mouseLat,mouseLon);
-    ui->lineEdit_lat->setText(QString::number(mouseLat));
-    ui->lineEdit_lon->setText(QString::number(mouseLon));
+    ui->lineEdit_lat->setText(QString::number(mouseLat,'g',10));
+    ui->lineEdit_lon->setText(QString::number(mouseLon,'g',10));
     dxMap = 0;
     dyMap = 0;
     update();
@@ -120,8 +129,8 @@ void MainWindow::wheelEvent(QWheelEvent* event)
 {
     if(event->delta()>0)mScale*=1.2;
     if(event->delta()<0)mScale/=1.2;
-    if(mScale>800)mScale = 800;
-    if(mScale<0.5)mScale = 0.5;
+    if(mScale>4000)mScale = 4000;
+    if(mScale<0.01)mScale = 0.01;
     update();
     repaint();
 }

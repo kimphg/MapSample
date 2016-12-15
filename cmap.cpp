@@ -61,7 +61,7 @@ void CMap::setCenterPos(double lat, double lon)
 
 bool CMap::setScaleRatio(int scale)
 {
-    if(scale<=15&&scale>=1)
+    if(scale<=20&&scale>=1)
     {
         mScale = scale;
         return true;
