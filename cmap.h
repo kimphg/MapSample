@@ -16,32 +16,29 @@ class CMap: public QObject
 public:
     CMap(QObject *parent = 0);
     virtual ~CMap();
-
-    void Repaint();
     void setCenterPos(double lat, double lon);
-    void setScaleRatio(int scale);
-    void setWidthHeight(int width, int height);
+    void setImgSize(int width, int height);
     void setPath(QString path);
-    double getScaleRatio();
-
-    void pan(const QPoint &delta);
-    void invalidate();
-    void render(QPainter *p, const QRect &rect);
     QPixmap getImage(double scale);
-    void UpdateImage();
-    double getScaleKm();
-    double pixelHeight(double km);
-    double pixelWidth(double km);
-
+    void ConvKmToWGS_precise(double x, double y, double *m_Long, double *m_Lat);
+    void ConvKmToWGS(double x, double y, double *m_Long, double *m_Lat);
+    void ConvWGSToKm(double *x, double *y, double m_Long, double m_Lat);
+    int getScaleRatio();
+    double getLat();
+    double getLon();
 signals:
     void updated(const QRect &rect);
 private slots:
     void LoadMap();
-
 protected:
     QRect tileRect(const QPoint &tp);
-
 private:
+    void Repaint();
+    void render(QPainter *p, const QRect &rect);
+    void invalidate();
+    bool setScaleRatio(int scale);
+    double getScaleKm();
+    void UpdateImage();
     QPoint m_offset;
     QRect m_tilesRect;
     QPixmap m_emptyTile;

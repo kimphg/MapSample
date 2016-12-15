@@ -15,17 +15,27 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     CMap *map;
+
+    bool isPressed;
+protected:
+    void wheelEvent(QWheelEvent *event);
     void paintEvent(QPaintEvent *e);
     void resizeEvent(QResizeEvent *);
     void keyPressEvent(QKeyEvent *e);
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
-    bool pressed;
+private slots:
+    void on_lineEdit_returnPressed();
+
 private:
+    double mScale;
     Ui::MainWindow *ui;
     QPoint pressPos;
+    int dxMap;
+    int dyMap;
 
+    void drawCrossHairMark(int x, int y, QPainter *p);
 };
 
 #endif // MAINWINDOW_H

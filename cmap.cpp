@@ -32,7 +32,7 @@ CMap::~CMap()
 
 }
 
-double CMap::getScaleRatio()
+int CMap::getScaleRatio()
 {
     return mScale;
 }
@@ -59,18 +59,25 @@ void CMap::setCenterPos(double lat, double lon)
 }
 
 
-void CMap::setScaleRatio(int scale)
+bool CMap::setScaleRatio(int scale)
 {
-    mScale = scale;
+    if(scale<=15&&scale>=1)
+    {
+        mScale = scale;
+        return true;
+    }
+    else return false;
 
 }
 
 
-void CMap::setWidthHeight(int width, int height)
+void CMap::setImgSize(int width, int height)
 {
     if(mapImage)delete mapImage;
-    mMapWidth = width;
-    mMapHeight = height;
+    mMapWidth = width*1.25;
+    mMapHeight = height*1.25;
+    // why 1.25??? - mapImage will be rescaled before sending to user
+    //with scale ratio from 0.8 to 1.6 original size
     mapImage = new QPixmap(mMapWidth,mMapHeight);
 }
 
@@ -89,15 +96,7 @@ double CMap::getScaleKm()
 
 }
 
-double CMap::pixelHeight(double km)
-{
-    return 0;
-}
 
-double CMap::pixelWidth(double km)
-{
-    return 0;
-}
 
 // xac dinh manh ban do tu dau ra dau vao
 QPointF tileForCoordinate(qreal lat, qreal lng, int zoom)
@@ -197,32 +196,50 @@ void CMap::UpdateImage()
 
 QPixmap CMap::getImage(double scale)
 {
+    // recursive algorithm to get value of zoomRatio between 0.8 and 1.6
     double curScale = this->getScaleKm();
     double zoomRatio = scale/curScale;
     if(zoomRatio<0.8)
     {
-        this->setScaleRatio(getScaleRatio()-1);
-        return getImage(scale);
+        if(this->setScaleRatio(getScaleRatio()-1))return getImage(scale);
+
     }
     else if(zoomRatio>=1.6)
     {
-        this->setScaleRatio(getScaleRatio()+1);
-        return getImage(scale);
+        if(this->setScaleRatio(getScaleRatio()+1))return getImage(scale);
+
     }
-    //printf("\nzoom ratio:%f - factor:%f ",zoomRatio,float(getScaleRatio()));
+    // repaint, rescale and return mapImage
+    if(!mapImage)
+    {
+        printf("\nMap image size have not set.");
+        return m_emptyTile;
+    }
     Repaint();
     return mapImage->scaled(mapImage->width()*zoomRatio,mapImage->height()*zoomRatio,Qt::IgnoreAspectRatio,Qt::SmoothTransformation );
 }
-
-void CMap::pan(const QPoint &delta)
+void CMap::ConvWGSToKm(double* x, double *y, double m_Long,double m_Lat)
 {
-    QPointF dx = QPointF(delta) / qreal(tdim);
-    QPointF center = tileForCoordinate(mCenterLat, mCenterLon, mScale) - dx;
-    mCenterLat = latitudeFromTile(center.y(), mScale);
-    mCenterLon = longitudeFromTile(center.x(), mScale);
-    invalidate();
+    double refLat = (mCenterLat + (m_Lat))*0.00872664625997;//pi/360
+    *x	= (((m_Long)-mCenterLon) * 111.31949079327357)*cos(refLat);// 3.14159265358979324/180.0*6378.137);//deg*pi/180*rEarth
+    *y	= ((mCenterLat - (m_Lat)) * 111.132954);
+    //tinh toa do xy KM so voi diem center khi biet lat-lon
 }
-
+void CMap::ConvKmToWGS(double x, double y, double *m_Long, double *m_Lat)
+{
+    *m_Lat  = mCenterLat +  (y)/(111.132954);
+    double refLat = (mCenterLat +(*m_Lat))*0.00872664625997;//3.14159265358979324/180.0/2;
+    *m_Long = (x)/(111.31949079327357*cos(refLat))+ mCenterLon;
+    //tinh toa do lat-lon khi biet xy km (truong hop coi trai dat hinh cau)
+}
+void CMap::ConvKmToWGS_precise(double x, double y, double *m_Long, double *m_Lat)
+{
+    *m_Lat  = mCenterLat +  (y)/(111.132954);
+    double refLat = (mCenterLat +(*m_Lat))*0.00872664625997;//3.14159265358979324/180.0/2;
+    *m_Long = (x)/(0.01745329252*6378.137*cos(atan(6356.7523142/6378.1370*tan(refLat))))+ mCenterLon;
+    *m_Lat  = mCenterLat +  (y)/(111.132954-0.559822*cos(2.0*refLat)+0.001175*cos(4.0*refLat));
+    //tinh toa do lat-lon khi biet xy km (truong hop coi trai dat hinh ellipsoid)
+}
 void CMap::LoadMap()
 {
     QPoint grab(0, 0);
@@ -238,8 +255,6 @@ void CMap::LoadMap()
         m_url = QUrl();
         return;
     }
-
-
     //QString path = "C:/Users/LamPT/Desktop/mapData/%1/%2_%3_%4.png" ;
     QString imageMapPath = mPath.arg(mScale).arg(grab.x()).arg(grab.y());
     QImage img(imageMapPath);
@@ -267,4 +282,12 @@ QRect CMap::tileRect(const QPoint &tp)
     int x = t.x() * tdim + m_offset.x();
     int y = t.y() * tdim + m_offset.y();
     return QRect(x, y, tdim, tdim);
+}
+double CMap::getLat()
+{
+    return mCenterLat;
+}
+double CMap::getLon()
+{
+    return mCenterLon;
 }
