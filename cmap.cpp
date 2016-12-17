@@ -17,7 +17,7 @@ uint qHash(const QPoint& p)
 // tile size in pixels
 const int tdim = 256;
 
-CMap::CMap(QObject *parent): QObject(parent)
+CMap::CMap(QObject *parent): mScale(10),QObject(parent)
 {
     //khoi tao mot vung pixmap co kich thuoc 256 X 256 va boi day no voi mau lightGray
     m_emptyTile = QPixmap(tdim, tdim);
@@ -25,8 +25,26 @@ CMap::CMap(QObject *parent): QObject(parent)
     mMapWidth = 1024;
     mMapHeight = 1024;
     mapImage = 0;
+    //SetType(1);
 }
-
+void CMap::SetType(int type)
+{
+    switch (type)
+    {
+    case 0:
+        this->setPath("C:/HR2D/MapData/OSM/" );
+        break;
+    case 1:
+        this->setPath("C:/HR2D/MapData/ThunderForest/" );
+        break;
+    case 2:
+        this->setPath("C:/HR2D/MapData/GS/" );
+        break;
+    default:
+        break;
+    }
+    Repaint();
+}
 CMap::~CMap()
 {
 
@@ -42,12 +60,14 @@ void CMap::Repaint()
 {
     invalidate();
     UpdateImage();
+
 }
 
 
 void CMap::setPath(QString path)
 {
-    mPath = path + "/%1/%2/%3.png";
+    mPath = path + "/%1/%2/%3";
+    m_tilePixmaps.clear();
 }
 
 
@@ -257,7 +277,9 @@ void CMap::LoadMap()
     }
     //QString path = "C:/Users/LamPT/Desktop/mapData/%1/%2_%3_%4.png" ;
     QString imageMapPath = mPath.arg(mScale).arg(grab.x()).arg(grab.y());
-    QImage img(imageMapPath);
+    QImage img(imageMapPath+".png");
+    if (img.isNull())
+        img = QImage(imageMapPath+".jpg");
     //QPoint tp = grab;
 
     m_tilePixmaps[grab] = QPixmap::fromImage(img);

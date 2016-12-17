@@ -26,6 +26,7 @@ public:
     int getScaleRatio();
     double getLat();
     double getLon();
+    void SetType(int type);
 signals:
     void updated(const QRect &rect);
 private slots:
